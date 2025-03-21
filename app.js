@@ -79,7 +79,23 @@ app.put("/users", async (req, res) => {
 
 });
 
-app.delete("/users/:id", async (req, res) => {});
+app.delete("/users", async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    const result = await db_config.query("DELETE FROM users WHERE id = $1", [id]);
+
+    const rows = result.rows;
+   
+    if(rows.length === 0)
+        return res.status(404).json( {msg : "Not deleted as user does not exists"});
+    
+    res.status(200).json({msg : "uesr deleted"});
+
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
